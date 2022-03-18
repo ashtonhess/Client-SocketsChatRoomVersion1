@@ -41,18 +41,15 @@ int main(int argc, char**argv){
     }
     serverAddy.sin_family = AF_INET;
     serverAddy.sin_port = htons(SERVER_PORT);
-    // Convert IPv4 and IPv6 addresses from text to binary form
+    //Converting IPv4 and IPv6 addresses from text to binary form
     if(inet_pton(AF_INET, inputAddy, &serverAddy.sin_addr)<=0){
-        cout<<">Error: Invalid address."<<endl;
+        cout<<"> Error: Invalid address."<<endl;
         return -1;
     }
     if (connect(sock, (struct sockaddr *)&serverAddy, sizeof(serverAddy)) < 0){
         cout<<"> Error: Connection Failed."<<endl;
         return -1;
     }
-    //send(sock , msg , strlen(msg) , 0 );
-    //send(sock , msg , strlen(msg) , 0 );
-
     //cout<<"msg sent to server"<<endl;
     //valread = read( sock , buffer, MAX_LINE);
     int i = recv(sock, buffer, MAX_LINE, 0);
@@ -62,57 +59,59 @@ int main(int argc, char**argv){
     }
     printf("%s\n",buffer );
     bool sendToTheServer=false;
-    while(status){
-        cout<<"> ";
-        //cin>>buffer;
-        cin.getline(buffer, 50, '\n');
-        strncpy(userInput, buffer, sizeof(buffer));
-        //string userInputUpToASpace = userInput;
-        vector<string> delimitVec = split(userInput,' ');
-        string firstStr=delimitVec.at(0);
-        //cout<<"FIRST STR: "<<firstStr<<endl;
-        //cout<<"delimitVec size: "<<delimitVec.size()<<endl;
-        //cout<<buffer<<endl;
-        if (delimitVec.at(0)=="login"){
-            //cout<<"LOGIN TRIGGERED"<<endl;
-            sendToTheServer=true;
-        }else if(delimitVec.at(0)=="newuser"){
-            //cout<<"NEWUSER TRIGGERED"<<endl;
+    bool while1;
+    while(while1){
 
-        }else if(delimitVec.at(0)=="send"){
-            //cout<<"SEND TRIGGERED"<<endl;
-            sendToTheServer=true;
 
-            send(sock , msg , strlen(msg) , 0 );
-        }else if (delimitVec.at(0)=="logout"){
-            //cout<<"LOGOUT"<<endl;
-            sendToTheServer=true;
-            status=false;
-        }else{
-            cout<<"> "<<"Enter a valid command: 'login', 'newuser', 'send', 'logout'"<<endl;
-        }
-        if(sendToTheServer==true){
-            //buffer[MAX_LINE] = "some shit";
-            strcpy("something", buffer);
-            cout<<"SENDING"<<endl;
-            send(sock,buffer, strlen(buffer),0);
-            cout<<"SENT"<<endl;
-            //int i = recv(sock, buffer, MAX_LINE, 0);
-            //buffer[i]=0;
-            cout<<"> "<<buffer<<endl;
-        }
-
-        //status = false;
     }
-    //recv()
+    return 0;
+}
+//        cout<<"> ";
+//        cin.getline(buffer, MAX_LINE, '\n');
+//        strncpy(userInput, buffer, sizeof(buffer));
+//        //string userInputUpToASpace = userInput;
+//        vector<string> delimitVec = split(userInput,' ');
+//        string firstStr=delimitVec.at(0);
+//        //cout<<"FIRST STR: "<<firstStr<<endl;
+//        //cout<<"delimitVec size: "<<delimitVec.size()<<endl;
+//        //cout<<buffer<<endl;
+//        if (delimitVec.at(0)=="login"){
+//            //cout<<"LOGIN TRIGGERED"<<endl;
+//            sendToTheServer=true;
+//        }else if(delimitVec.at(0)=="newuser"){
+//            //cout<<"NEWUSER TRIGGERED"<<endl;
+//
+//        }else if(delimitVec.at(0)=="send"){
+//            //cout<<"SEND TRIGGERED"<<endl;
+//            sendToTheServer=true;
+//
+//            send(sock , msgToServer , strlen(msgToServer) , 0 );
+//        }else if (delimitVec.at(0)=="logout"){
+//            //cout<<"LOGOUT"<<endl;
+//            sendToTheServer=true;
+//            status=false;
+//        }else{
+//            cout<<"> "<<"Enter a valid command: 'login', 'newuser', 'send', 'logout'"<<endl;
+//        }
+//        if(sendToTheServer==true){
+//            //buffer[MAX_LINE] = "some shit";
+////            strcpy("something", buffer);
+////            cout<<"SENDING"<<endl;
+////            send(sock,buffer, strlen(buffer),0);
+////            cout<<"SENT"<<endl;
+////            //int i = recv(sock, buffer, MAX_LINE, 0);
+////            //buffer[i]=0;
+////            cout<<"> "<<buffer<<endl;
+//            //send(sock , msg , strlen(msg) , 0 );
+//        }
+//
+//        //status = false;
 
+    //recv()
     //int closeSocket;
     //closeSocket=close(sock);
 
-
-    return 0;
-}
-
+    //This function splits a string by a delimiter and places each piece in a string vector.
 vector<string> split (const string &s, char delim) {
     vector<string> result;
     stringstream ss (s);
