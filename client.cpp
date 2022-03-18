@@ -1,5 +1,25 @@
 //
-// Created by Ashton Hess on 3/17/22.
+// Created by Ashton Hess on 3/17/22. -> Migrating so I can use my Mac. Now using makefiles instead of VS.
+// Pawprint: AAHB8F
+//
+//
+// Program description:
+// I implemented a simple chat room in c++ with both a server and client that both use
+//the socket API. The client program provides the following commands to the user: 'login'(allow users to join the chat room),
+// 'newuser'(create a new user account), 'send'(send a message to other clients; actually send the message to the server and
+// the server forwards the message to other clients), and 'logout'(quit the chat room).
+//
+// The server runs the chat room service and echoes messages back to the client.
+// Storage of all users that are created is implemented to store a list in users.txt.
+//
+//
+// How to run:
+// First, you will need a C++14 compiler installed.
+// Second, navigate to each program's folder in terminal.
+// Third, run the command "make" in each terminal. This will create the object files and the executables.
+// Last, run the command "./server" in the server terminal, and "./client" (appending the server address argument) in the client's terminal.
+//
+// Note: To clean, run make clean in both project directories.
 //
 #include <iostream>
 using namespace std;
@@ -19,6 +39,8 @@ using namespace std;
 vector<string> split (const string &s, char delim);
 
 int main(int argc, char**argv){
+
+    cout<<"Ashton's chat room client. Version One."<<endl;
 
     bool status=true;
     char* inputAddy;
@@ -52,20 +74,130 @@ int main(int argc, char**argv){
     }
     //cout<<"msg sent to server"<<endl;
     //valread = read( sock , buffer, MAX_LINE);
-    int i = recv(sock, buffer, MAX_LINE, 0);
+    //int i = recv(sock, buffer, MAX_LINE, 0);
     //cout<<"VALUE OF I: "<<i<<endl;
-    if (i==-1){
-        cout<<"> Error: receiving."<<endl;
-    }
-    printf("%s\n",buffer );
-    bool sendToTheServer=false;
-    bool while1;
-    while(while1){
+    //if (i==-1){
+    //    cout<<"> Error: receiving."<<endl;
+    //}
+    //printf("%s\n",buffer );
 
-
+    bool sendToTheServer;
+    bool while1=false;
+    while(!while1){
+        sendToTheServer=false;
+        cout<<"> ";
+        cin.getline(userInput, MAX_LINE, '\n');
+        string storedUserInput = userInput;
+        char* storedChar = userInput;
+        vector<string> delimitVec;
+        delimitVec = split(userInput,' ');
+        if (delimitVec.at(0)=="login") {
+            if(delimitVec.size()==3){
+                if (delimitVec.at(1).size()>32 || delimitVec.at(1).size()<3){
+                    cout<<"Denied. login userID too long."<<endl;
+                }else if(delimitVec.at(2).size()<4 || delimitVec.at(2).size()>8){
+                    cout<<"Denied. login password must be between 4 and 8 characters."<<endl;
+                }else{
+                    sendToTheServer=true;
+                    //send(sock, userInput, strlen(buffer), 0);
+                }
+            }else{
+                cout<<"Denied. login incorrect arguments."<<endl;
+            }
+        }else if (delimitVec.at(0)=="newuser"){
+            if(delimitVec.size()==3){
+                sendToTheServer=true;
+            }else{
+                cout<<"Denied. login incorrect arguments."<<endl;
+            }
+        }else if (delimitVec.at(0)=="send"){
+            if(delimitVec.size()==1){
+                cout<<"> Denied. send incorrect arguments."<<endl;
+            }else{
+                sendToTheServer=true;
+            }
+        }else if (delimitVec.at(0)=="logout"){
+            if(delimitVec.size()==1){
+                while1=true;
+                sendToTheServer=true;
+            }else{
+                cout<<"Denied. logout incorrect arguments."<<endl;
+            }
+        }else{
+            cout<<"Denied. Invalid command."<<endl;
+        }
+            //strncpy(userInput, buffer, sizeof(buffer));
+            if (sendToTheServer==true){
+                send(sock, userInput, MAX_LINE,0);
+                int r = recv(sock, buffer,MAX_LINE,0);
+                if (r==-1){
+                    cout<<"> Error: receiving."<<endl;
+                }
+                buffer[r]=0;
+                cout<<buffer<<endl;
+            }
     }
+
+    close(sock);
     return 0;
 }
+
+
+//        if (delimitVec.at(0)=="login"){
+//            int loginResult= login(delimitVec.at(1),delimitVec.at(2));
+//            //return 0 for user does not exist; return 1 for login success; return 2 for wrong password.
+//            if (loginResult!=1){
+//                cout<<"> Denied. User name or password incorrect."<<endl;
+//            }else{
+//                logInStatus=true;
+//                const char *logInSuccessMsg= "> login confirmed";
+//                strcpy(buffer, logInSuccessMsg);
+//                send(currentSocket, buffer, strlen(buffer), 0);
+//                userID = delimitVec.at(1);
+//            }
+//
+//        }else if (delimitVec.at(0)=="newuser"){
+//
+//            //Create a new user account; returns 0 if userID account already exists; returns 1 if user successfully added.
+//            int newUserResult = newUser(delimitVec.at(1), delimitVec.at(2));
+//            if (newUserResult==1){
+//                cout<<"New user account created."<<endl;//---------------------------------------------------------------NEEDED--------------------------------------------------------------------------
+//                const char *userAcctCreatedSuccess= "> New user account created. Please login.";
+//                strcpy(buffer, userAcctCreatedSuccess);
+//                send(currentSocket, buffer, strlen(buffer), 0);
+//            }else{
+//                //cout<<"> Denied. User account already exists."<<endl;
+//                const char *userAcctExists= "> Denied. User account already exists.";
+//                strcpy(buffer, userAcctExists);
+//                send(currentSocket, buffer, strlen(buffer), 0);
+//            }
+//
+//        }else if (delimitVec.at(0)=="send"){
+//            if (logInStatus==true){
+//
+//                const char *userAcctExists= "> login confirmed";
+//                strcpy(buffer, userAcctExists);
+//                send(currentSocket, buffer, strlen(buffer), 0);
+//
+//            }else{
+//                //cout<<"> Denied. Please login first."<<endl;
+//                const char *loginBefore= "> Denied. Please login first.";
+//                strcpy(buffer, loginBefore);
+//                send(currentSocket, buffer, strlen(buffer), 0);
+//            }
+//        }else if (delimitVec.at(0)=="logout") {
+//            if (logInStatus == true) {
+//                userID = "";
+//                logout();
+//                const char *logoutMsg= "> You left.";
+//                strcpy(buffer, logoutMsg);
+//                send(currentSocket, buffer, strlen(buffer), 0);
+//
+//            }
+//        }
+
+
+
 //        cout<<"> ";
 //        cin.getline(buffer, MAX_LINE, '\n');
 //        strncpy(userInput, buffer, sizeof(buffer));
